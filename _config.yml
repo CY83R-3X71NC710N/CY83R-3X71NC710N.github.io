@@ -20,7 +20,7 @@ timezone: America/Chicago
 
 title: "Hacker's Loft" # the main title
 
-tagline: A text-focused Jekyll theme # it will display as the sub-title
+tagline: Hacking Tips, Tricks, and more # it will display as the sub-title
 
 description: >- # used by seo meta and the atom feed
   A hackers hangout secrets, tips and tricks.
@@ -37,7 +37,7 @@ twitter:
 social:
   # Change to your full name.
   # It will be displayed as the default author of the posts and the copyright owner in the Footer
-  name: your_full_name
+  name: Gavin Klibowitz
   email: example@domain.com # change to your email address
   links:
     # The first element serves as the copyright owner's link
