@@ -1,11 +1,10 @@
-
 ---
 title: Literature/Pictures vs other forms of media.
 author: Gavin
 date: 2023-05-09
 categories: [Blogging, Philosophy]
-tags: [information]
-pin: true
+tags: [philosophy]
+pin: false
 ---
 
 # Why is literature and pictures in my belief better than other forms of learning?:
