@@ -17,4 +17,5 @@ Create scripts & update theme and favicon add gussian blur aswell as programming
 # THANKS TO:
 ```
 https://github.com/jekyll/jekyll-compose
+https://mozilla.github.io/pdf.js/build/pdf.js
 ```
