@@ -1,26 +1,54 @@
-<!-- Presentation -->
-<div id="pdf-container" style="overflow: scroll; -webkit-overflow-scrolling: touch; width: 100%; height: 90vh;"></div>
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Presentation</title>
+  <style>
+    #pdf-container {
+      overflow: scroll;
+      -webkit-overflow-scrolling: touch;
+      width: 100%;
+      height: 90vh;
+    }
+  </style>
+</head>
+<body>
+  <div id="pdf-container"></div>
 
-<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
-<script>
-  // URL of PDF document
-  const pdfUrl = "/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf";
-
-  // Load PDF document
-  pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
-    // Load the first page
-    pdf.getPage(1).then(function(page) {
-      // Set up canvas
-      const canvas = document.createElement("canvas");
-      const context = canvas.getContext("2d");
-      const viewport = page.getViewport({ scale: 1.0 });
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      // Add canvas to page container
-      const container = document.getElementById("pdf-container");
-      container.appendChild(canvas);
-      // Render the page to the canvas
-      page.render({ canvasContext: context, viewport: viewport });
+  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script>
+    // URL of PDF document
+    const pdfUrl = "/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf";
+    // Load PDF document
+    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+      // Set up variables
+      const numPages = pdf.numPages;
+      let currentPage = 1;
+      // Loop through each page of the document
+      function renderPage() {
+        pdf.getPage(currentPage).then(function(page) {
+          // Set up canvas
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          const viewport = page.getViewport({ scale: 1.0 });
+          canvas.width = viewport.width;
+          canvas.height = viewport.height;
+          // Add canvas to page container
+          const container = document.getElementById("pdf-container");
+          container.innerHTML = "";
+          container.appendChild(canvas);
+          // Render the page to the canvas
+          page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
+            currentPage++;
+            if (currentPage > numPages) {
+              currentPage = 1;
+            }
+            setTimeout(renderPage, 10000); // Switch every 10 seconds
+          });
+        });
+      }
+      renderPage();
     });
-  });
-</script>
+  </script>
+</body>
+</html>
