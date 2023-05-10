@@ -14,6 +14,7 @@
       margin: auto;
       height: 100%;
       width: 100%;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -31,8 +32,15 @@
         var viewport = page.getViewport({scale: 1});
 
         // Set the canvas size to fill the screen
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
+        function setCanvasSize() {
+          var devicePixelRatio = window.devicePixelRatio || 1;
+          canvas.height = window.innerHeight * devicePixelRatio;
+          canvas.width = window.innerWidth * devicePixelRatio;
+          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            canvas.style.transform = 'rotate(180deg)';
+          }
+        }
+        setCanvasSize();
 
         // Add the canvas to the document
         document.getElementById('pdf-container').appendChild(canvas);
@@ -41,19 +49,6 @@
         page.render({
           canvasContext: context,
           viewport: viewport
-        });
-
-        // Resize the canvas whenever the window is resized
-        window.addEventListener('resize', function() {
-          canvas.height = window.innerHeight;
-          canvas.width = window.innerWidth;
-          pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height) * window.devicePixelRatio});
-            page.render({
-              canvasContext: context,
-              viewport: viewport
-            });
-          });
         });
 
         // Set up automatic slideshow
@@ -66,13 +61,18 @@
             currentPage++;
           }
           pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height) * window.devicePixelRatio});
+            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+            setCanvasSize();
             page.render({
               canvasContext: context,
               viewport: viewport
             });
           });
         }, 10000);
+
+        // Update canvas size on window resize and orientation change
+        window.addEventListener('resize', setCanvasSize);
+        window.addEventListener('orientationchange', setCanvasSize);
       });
     });
   </script>
