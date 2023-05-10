@@ -11,6 +11,8 @@ GITHUB_USERNAME.github.io
 This exports your Remnote as a .md with the correct categories to show up on the website.
 This also imports a tome.app pdf into the website.
 
+Doing this normally would be a fairly complicated setup especially with the generative aspect to some of the literature.
+
 # Todo
 Create scripts & update theme and favicon add gussian blur aswell as programming background. Give a red and black theme
 
