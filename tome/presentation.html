@@ -34,14 +34,25 @@
         // Set the canvas size to fill the screen
         function setCanvasSize(scale) {
           var devicePixelRatio = window.devicePixelRatio || 1;
-          canvas.height = window.innerHeight * devicePixelRatio * scale;
-          canvas.width = window.innerWidth * devicePixelRatio * scale;
+          if (window.innerWidth > window.innerHeight) {
+            canvas.height = window.innerHeight * devicePixelRatio * scale;
+            canvas.width = window.innerWidth * devicePixelRatio * scale;
+          } else {
+            canvas.height = window.innerWidth * devicePixelRatio * scale;
+            canvas.width = window.innerHeight * devicePixelRatio * scale;
+          }
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
             canvas.style.transform = 'rotate(180deg)';
           }
           viewport.width = canvas.width;
         }
-        setCanvasSize(1); // Default scale factor of 1
+        
+        // Check device orientation at start of script and set canvas size accordingly
+        if (window.innerWidth > window.innerHeight) {
+          setCanvasSize(1);
+        } else {
+          setCanvasSize(0.5);
+        }
 
         // Add the canvas to the document
         document.getElementById('pdf-container').appendChild(canvas);
@@ -73,8 +84,20 @@
         }, 10000);
 
         // Update canvas size on window resize and orientation change
-        window.addEventListener('resize', function() { setCanvasSize(1); });
-        window.addEventListener('orientationchange', function() { setCanvasSize(1); });
+        window.addEventListener('resize', function() { 
+          if (window.innerWidth > window.innerHeight) {
+            setCanvasSize(1);
+          } else {
+            setCanvasSize(0.5);
+          }
+        });
+        window.addEventListener('orientationchange', function() { 
+          if (window.innerWidth > window.innerHeight) {
+            setCanvasSize(1);
+          } else {
+            setCanvasSize(0.5);
+          }
+        });
       });
     });
   </script>
