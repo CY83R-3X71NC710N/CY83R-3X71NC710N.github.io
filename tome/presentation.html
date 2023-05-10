@@ -14,6 +14,7 @@
       margin: auto;
       height: 100%;
       width: 100%;
+      object-fit: contain;
     }
   </style>
 </head>
@@ -30,18 +31,8 @@
         var context = canvas.getContext('2d');
         var viewport = page.getViewport({scale: 1});
 
-        // Set the canvas size to fill the screen
-        canvas.height = window.innerHeight;
-        canvas.width = window.innerWidth;
-
         // Add the canvas to the document
         document.getElementById('pdf-container').appendChild(canvas);
-
-        // Render the first page
-        page.render({
-          canvasContext: context,
-          viewport: viewport
-        });
 
         // Set up automatic slideshow
         var currentPage = 1;
@@ -53,9 +44,27 @@
             currentPage++;
           }
           pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
-            canvas.height = window.innerHeight;
-            canvas.width = window.innerWidth;
+            // Get the viewport size for the current page
+            var viewport = page.getViewport({scale: 1});
+            
+            // Calculate the aspect ratio of the viewport
+            var aspectRatio = viewport.width / viewport.height;
+
+            // Set the canvas height and width to fit the aspect ratio and the screen
+            var screenHeight = window.innerHeight;
+            var screenWidth = window.innerWidth;
+            var canvasHeight, canvasWidth;
+            if (screenHeight * aspectRatio > screenWidth) {
+              canvasHeight = screenWidth / aspectRatio;
+              canvasWidth = screenWidth;
+            } else {
+              canvasHeight = screenHeight;
+              canvasWidth = screenHeight * aspectRatio;
+            }
+            canvas.height = canvasHeight;
+            canvas.width = canvasWidth;
+
+            // Render the current page
             page.render({
               canvasContext: context,
               viewport: viewport
