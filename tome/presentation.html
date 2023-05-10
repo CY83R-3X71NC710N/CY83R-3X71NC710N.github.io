@@ -1,89 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Presentation</title>
+  <title>PDF Slideshow</title>
   <style>
     html, body {
-      height: 100%;
       margin: 0;
+      padding: 0;
+      height: 100%;
     }
-    
-    #pdf-container {
-      height: calc(100vh - 100px);
-      overflow: scroll;
-      -webkit-overflow-scrolling: touch;
+    canvas {
+      display: block;
+      margin: auto;
+      height: 100%;
       width: 100%;
-    }
-    
-    #overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background-color: black;
-      opacity: 1;
-      z-index: 9999;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      animation: fadeout 1s ease-in-out forwards;
-    }
-    
-    @keyframes fadeout {
-      from {
-        opacity: 1;
-      }
-      to {
-        opacity: 0;
-      }
     }
   </style>
 </head>
 <body>
-  <div id="overlay"></div>
   <div id="pdf-container"></div>
 
-  <script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    // URL of PDF document
-    const pdfUrl = "/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf";
-    // Load PDF document
-    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
-      // Set up variables
-      const numPages = pdf.numPages;
-      let currentPage = 1;
-      // Loop through each page of the document
-      function renderPage() {
-        pdf.getPage(currentPage).then(function(page) {
-          // Set up canvas
-          const canvas = document.createElement("canvas");
-          const context = canvas.getContext("2d");
-          const viewport = page.getViewport({ scale: 1.0 });
-          canvas.width = viewport.width;
-          canvas.height = viewport.height;
-          // Add canvas to page container
-          const container = document.getElementById("pdf-container");
-          container.innerHTML = "";
-          container.appendChild(canvas);
-          // Render the page to the canvas
-          page.render({ canvasContext: context, viewport: viewport }).promise.then(function() {
-            currentPage++;
-            if (currentPage > numPages) {
-              currentPage = 1;
-            }
-            // Fade in and out animation
-            const overlay = document.getElementById("overlay");
-            overlay.style.animation = "fadein 1s ease-in-out forwards";
-            setTimeout(function() {
-              overlay.style.animation = "fadeout 1s ease-in-out forwards";
-            }, 9000); // Fade out after 9 seconds
-            setTimeout(renderPage, 10000); // Switch every 10 seconds
-          });
+    // Initialize the PDF viewer
+    pdfjsLib.getDocument('/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf').promise.then(function(pdf) {
+      // Get the first page of the PDF
+      pdf.getPage(1).then(function(page) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var viewport = page.getViewport({scale: 1});
+
+        // Set the canvas size to fill the screen
+        canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+
+        // Add the canvas to the document
+        document.getElementById('pdf-container').appendChild(canvas);
+
+        // Render the first page
+        page.render({
+          canvasContext: context,
+          viewport: viewport
         });
-      }
-      renderPage();
+
+        // Set up automatic slideshow
+        var currentPage = 1;
+        var numPages = pdf.numPages;
+        setInterval(function() {
+          if (currentPage >= numPages) {
+            currentPage = 1;
+          } else {
+            currentPage++;
+          }
+          pdf.getPage(currentPage).then(function(page) {
+            var viewport = page.getViewport({scale: 1});
+            canvas.height = window.innerHeight;
+            canvas.width = window.innerWidth;
+            page.render({
+              canvasContext: context,
+              viewport: viewport
+            });
+          });
+        }, 10000);
+      });
     });
   </script>
 </body>
