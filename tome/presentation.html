@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -8,10 +7,12 @@
       margin: 0;
       padding: 0;
       height: 100%;
+      overflow: hidden;
     }
     #pdf-container {
       position: relative;
       height: 100%;
+      overflow: hidden;
     }
     #loading-overlay {
       position: absolute;
@@ -29,6 +30,11 @@
     canvas {
       display: block;
       object-fit: contain;
+      touch-action: none;
+      user-select: none;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
     }
   </style>
 </head>
@@ -43,53 +49,74 @@
     var loadingOverlay = document.getElementById('loading-overlay');
     setTimeout(function() {
       loadingOverlay.style.display = 'none';
+      startSlideshow();
     }, 10000);
 
     // Initialize the PDF viewer
-    pdfjsLib.getDocument('/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf').promise.then(function(pdf) {
-      // Get the first page of the PDF
-      pdf.getPage(1).then(function(page) {
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var viewport = page.getViewport({scale: 1});
+    var canvas = document.createElement('canvas');
+    var context = canvas.getContext('2d');
+    var pdfDoc = null;
+    var pageNum = 1;
+    var pageRendering = false;
+    var pageNumPending = null;
 
-        // Set the canvas size to fill the screen
-        function setCanvasSize() {
-          var devicePixelRatio = window.devicePixelRatio || 1;
-          canvas.height = window.innerHeight * devicePixelRatio;
-          canvas.width = window.innerWidth * devicePixelRatio;
-        }
-        setCanvasSize();
-
-        // Add the canvas to the document
-        document.getElementById('pdf-container').appendChild(canvas);
-
-        // Render the first page
+    function renderPage(num) {
+      pageRendering = true;
+      pdfDoc.getPage(num).then(function(page) {
+        var viewport = page.getViewport({ scale: 1 });
+        var devicePixelRatio = window.devicePixelRatio || 1;
+        canvas.height = window.innerHeight * devicePixelRatio;
+        canvas.width = window.innerWidth * devicePixelRatio;
+        viewport = page.getViewport({ scale: canvas.width / viewport.width });
         page.render({
           canvasContext: context,
           viewport: viewport
+        }).promise.then(function() {
+          pageRendering = false;
+          if (pageNumPending !== null) {
+            renderPage(pageNumPending);
+            pageNumPending = null;
+          }
         });
-
-        // Set up automatic slideshow
-        var currentPage = 0;
-        var numPages = pdf.numPages;
-        setInterval(function() {
-          currentPage = (currentPage + 1) % numPages;
-          pdf.getPage(currentPage + 1).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
-            setCanvasSize();
-            page.render({
-              canvasContext: context,
-              viewport: viewport
-            });
-          });
-        }, 10000);
-
-        // Update canvas size on window resize and orientation change
-        window.addEventListener('resize', setCanvasSize);
-        window.addEventListener('orientationchange', setCanvasSize);
       });
-    });
-  </script>
-</body>
-</html>
+      pageNum = num;
+    }
+
+    function queueRenderPage(num) {
+      if (pageRendering) {
+        pageNumPending = num;
+      } else {
+        renderPage(num);
+      }
+    }
+
+    function onPrevPage() {
+      if (pageNum <= 1) {
+        return;
+      }
+      pageNum--;
+      queueRenderPage(pageNum);
+    }
+
+    function onNextPage() {
+      if (pageNum >= pdfDoc.numPages) {
+        return;
+      }
+      pageNum++;
+      queueRenderPage(pageNum);
+    }
+
+    function startSlideshow() {
+      pdfjsLib.getDocument('/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf').promise.then(function(pdf) {
+        pdfDoc = pdf;
+        renderPage(1);
+        setInterval(function() {
+          onNextPage();
+        }, 10000);
+      });
+    }
+
+    // Add the canvas to the document
+    document.getElementById('pdf-container').appendChild(canvas);
+
+    //
