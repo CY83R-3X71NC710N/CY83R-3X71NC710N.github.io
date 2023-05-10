@@ -38,7 +38,10 @@
         document.getElementById('pdf-container').appendChild(canvas);
 
         // Render the first page
-        renderPage(page, context, viewport);
+        page.render({
+          canvasContext: context,
+          viewport: viewport
+        });
 
         // Set up automatic slideshow
         var currentPage = 1;
@@ -50,34 +53,17 @@
             currentPage++;
           }
           pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: getScaleFactor(page)});
+            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             canvas.height = window.innerHeight;
             canvas.width = window.innerWidth;
-            renderPage(page, context, viewport);
+            page.render({
+              canvasContext: context,
+              viewport: viewport
+            });
           });
         }, 10000);
       });
     });
-
-    // Renders the given PDF page onto the canvas using the specified context and viewport
-    function renderPage(page, context, viewport) {
-      var renderContext = {
-        canvasContext: context,
-        viewport: viewport
-      };
-      page.render(renderContext);
-    }
-
-    // Calculates the scale factor to fit the given PDF page onto the screen
-    function getScaleFactor(page) {
-      var viewportWidth = window.innerWidth;
-      var viewportHeight = window.innerHeight;
-      var pageWidth = page.getViewport({scale: 1}).width;
-      var pageHeight = page.getViewport({scale: 1}).height;
-      var scaleX = viewportWidth / pageWidth;
-      var scaleY = viewportHeight / pageHeight;
-      return Math.min(scaleX, scaleY);
-    }
   </script>
 </body>
 </html>
