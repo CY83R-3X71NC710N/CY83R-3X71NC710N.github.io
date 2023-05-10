@@ -1,62 +1,26 @@
 <!-- Presentation -->
-<div id="pdf-container" style="position: fixed; top: 0; left: 0; right: 0; bottom: 0;">
-  <div id="pdf-wrapper" style="width: 100%; height: 100%; overflow: auto; -webkit-overflow-scrolling: touch;">
-    <object data="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf" type="application/pdf" style="width: 100%; height: 100%;">
-      <embed src="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">Download PDF</a>.</p>
-      </embed>
-    </object>
-  </div>
-  <div id="scrollbar" style="position: fixed; right: 5px; top: 0; bottom: 0; width: 5px; background-color: #aaa; opacity: 0.5; z-index: 999;">
-    <div id="thumb" style="position: absolute; width: 5px; background-color: #000; opacity: 0.7; cursor: pointer;"></div>
-  </div>
-</div>
+<div id="pdf-container" style="overflow: scroll; -webkit-overflow-scrolling: touch; width: 100%; height: 90vh;"></div>
 
+<script src="https://mozilla.github.io/pdf.js/build/pdf.js"></script>
 <script>
-  var scrollbar = document.getElementById('scrollbar');
-  var thumb = document.getElementById('thumb');
-  var pdfWrapper = document.getElementById('pdf-wrapper');
+  // URL of PDF document
+  const pdfUrl = "/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf";
 
-  var scrollPdf = function() {
-    var scrollTop = pdfWrapper.scrollTop;
-    var scrollHeight = pdfWrapper.scrollHeight;
-    var clientHeight = pdfWrapper.clientHeight;
-    var thumbHeight = clientHeight * (clientHeight / scrollHeight);
-
-    thumb.style.height = thumbHeight + 'px';
-    thumb.style.top = (scrollTop / scrollHeight) * clientHeight + 'px';
-  };
-
-  pdfWrapper.addEventListener('scroll', scrollPdf);
-  window.addEventListener('resize', scrollPdf);
-
-  var startY, startTop;
-  var startDrag = function(e) {
-    startY = e.clientY;
-    startTop = parseInt(thumb.style.top);
-    document.addEventListener('mousemove', doDrag);
-    document.addEventListener('mouseup', stopDrag);
-    return false;
-  };
-
-  var doDrag = function(e) {
-    var delta = e.clientY - startY;
-    var scrollHeight = pdfWrapper.scrollHeight;
-    var clientHeight = pdfWrapper.clientHeight;
-    var thumbHeight = parseInt(thumb.style.height);
-    var maxTop = clientHeight - thumbHeight;
-    var top = Math.min(Math.max(startTop + delta, 0), maxTop);
-
-    thumb.style.top = top + 'px';
-    pdfWrapper.scrollTop = (top / clientHeight) * scrollHeight;
-
-    return false;
-  };
-
-  var stopDrag = function(e) {
-    document.removeEventListener('mousemove', doDrag);
-    document.removeEventListener('mouseup', stopDrag);
-  };
-
-  thumb.addEventListener('mousedown', startDrag);
+  // Load PDF document
+  pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+    // Load the first page
+    pdf.getPage(1).then(function(page) {
+      // Set up canvas
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      const viewport = page.getViewport({ scale: 1.0 });
+      canvas.width = viewport.width;
+      canvas.height = viewport.height;
+      // Add canvas to page container
+      const container = document.getElementById("pdf-container");
+      container.appendChild(canvas);
+      // Render the page to the canvas
+      page.render({ canvasContext: context, viewport: viewport });
+    });
+  });
 </script>
