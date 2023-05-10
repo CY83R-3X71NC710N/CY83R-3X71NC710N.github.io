@@ -15,8 +15,6 @@
       height: 100%;
       width: 100%;
       object-fit: contain;
-      transform: rotate(180deg);
-      -webkit-transform: rotate(180deg); /* Fix for iOS devices */
     }
   </style>
 </head>
@@ -27,8 +25,8 @@
   <script>
     // Initialize the PDF viewer
     pdfjsLib.getDocument('/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf').promise.then(function(pdf) {
-      // Get the second page of the PDF (changed from first page)
-      pdf.getPage(2).then(function(page) {
+      // Get the first page of the PDF
+      pdf.getPage(1).then(function(page) {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
         var viewport = page.getViewport({scale: 1});
@@ -51,15 +49,11 @@
         });
 
         // Set up automatic slideshow
-        var currentPage = 2; // Changed from 1
+        var currentPage = 0;
         var numPages = pdf.numPages;
         setInterval(function() {
-          if (currentPage >= numPages) {
-            currentPage = 1;
-          } else {
-            currentPage++;
-          }
-          pdf.getPage(currentPage).then(function(page) {
+          currentPage = (currentPage + 1) % numPages;
+          pdf.getPage(currentPage + 1).then(function(page) {
             var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             setCanvasSize();
             page.render({
