@@ -13,6 +13,8 @@ This also imports a tome.app pdf into the website.
 
 Doing this normally would be a fairly complicated setup especially with the generative aspect to some of the literature.
 
+Do to the way my PDF viewer works I suggest keeping the titles on tome short or they may go off screen on smaller devices.
+
 # Todo
 Create scripts & update theme and favicon add gussian blur aswell as programming background. Give a red and black theme
 
