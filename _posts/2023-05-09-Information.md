@@ -15,8 +15,4 @@ This website has my various viewpoints and literature/picture based content such
 Well, who wouldn't want a personal wikipedia but my blog offers something unique, I explain content an easy-to-understand way and will dive into many advanced cybersecurity topics.
 
 # Presentation:
-<object data="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf" type="application/pdf" width="1500px" height="1500px" style="overflow:hidden">
-    <embed src="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">
-        <p>This browser does not support PDFs. Please download the PDF to view it: <a href="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">Download PDF</a>.</p>
-    </embed>
-</object>
+[View Presentation](/tome/presentation.html)
