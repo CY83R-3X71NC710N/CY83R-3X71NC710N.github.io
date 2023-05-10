@@ -2,13 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Custom HL PDF Slideshow</title>
+  <title>PDF Slideshow</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
-      overflow: hidden;
     }
     canvas {
       display: block;
@@ -41,7 +40,6 @@
             canvas.style.transform = 'rotate(180deg)';
           }
           viewport.width = canvas.width;
-          viewport.height = canvas.height;
         }
         setCanvasSize();
 
@@ -64,10 +62,9 @@
             currentPage++;
           }
           pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.min(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             setCanvasSize();
             viewport.width = canvas.width;
-            viewport.height = canvas.height;
             page.render({
               canvasContext: context,
               viewport: viewport
@@ -83,3 +80,5 @@
   </script>
 </body>
 </html>
+
+ChatGPT
