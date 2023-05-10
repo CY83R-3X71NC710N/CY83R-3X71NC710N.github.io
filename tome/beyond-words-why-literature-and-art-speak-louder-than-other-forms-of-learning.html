@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>PDF Slideshow</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+    canvas {
+      display: block;
+      margin: auto;
+      height: 100%;
+      width: 100%;
+      object-fit: contain;
+    }
+  </style>
+</head>
+<body>
+  <div id="pdf-container"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+  <script>
+    // Initialize the PDF viewer
+    pdfjsLib.getDocument('/tome/beyond-words-why-literature-and-art-speak-louder-than-other-forms-of-learning.pdf').promise.then(function(pdf) {
+      // Get the first page of the PDF
+      pdf.getPage(1).then(function(page) {
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var viewport = page.getViewport({scale: 1});
+
+        // Set the canvas size to fill the screen
+        function setCanvasSize(scale) {
+          var devicePixelRatio = window.devicePixelRatio || 1;
+          if (window.innerWidth > window.innerHeight) {
+            canvas.height = window.innerHeight * devicePixelRatio * scale;
+            canvas.width = window.innerWidth * devicePixelRatio * scale;
+          } else {
+            canvas.height = window.innerWidth * devicePixelRatio * scale;
+            canvas.width = window.innerHeight * devicePixelRatio * scale;
+          }
+          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            canvas.style.transform = 'rotate(180deg)';
+          }
+          viewport.width = canvas.width;
+        }
+        
+        // Check device orientation at start of script and set canvas size accordingly
+        if (window.innerWidth > window.innerHeight) {
+          setCanvasSize(1);
+        } else {
+          setCanvasSize(0.5);
+        }
+
+        // Add the canvas to the document
+        document.getElementById('pdf-container').appendChild(canvas);
+
+        // Render the first page
+        page.render({
+          canvasContext: context,
+          viewport: viewport
+        });
+
+        // Set up automatic slideshow
+        var currentPage = 1;
+        var numPages = pdf.numPages;
+        setInterval(function() {
+          if (currentPage >= numPages) {
+            currentPage = 1;
+          } else {
+            currentPage++;
+          }
+          pdf.getPage(currentPage).then(function(page) {
+            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+            setCanvasSize(1); // Reset scale factor to 1
+            viewport.width = canvas.width;
+            page.render({
+              canvasContext: context,
+              viewport: viewport
+            });
+          });
+        }, 10000);
+
+        // Update canvas size on window resize and orientation change
+        window.addEventListener('resize', function() { 
+          if (window.innerWidth > window.innerHeight) {
+            setCanvasSize(1);
+          } else {
+            setCanvasSize(0.5);
+          }
+        });
+        window.addEventListener('orientationchange', function() { 
+          if (window.innerWidth > window.innerHeight) {
+            setCanvasSize(1);
+          } else {
+            setCanvasSize(0.5);
+          }
+        });
+      });
+    });
+  </script>
+</body>
+</html>
