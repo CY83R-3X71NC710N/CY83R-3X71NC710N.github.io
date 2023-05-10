@@ -16,4 +16,13 @@
     var pdfContainer = document.getElementById("pdf-container");
     pdfContainer.style.width = screenWidth + "px";
     pdfContainer.style.height = screenHeight + "px";
+
+    // Add touchmove event listener to scroll PDF container
+    pdfContainer.addEventListener('touchmove', function(e) {
+        // Prevent default touch behavior (i.e. scrolling the page)
+        e.preventDefault();
+        // Scroll the PDF container by the amount the user moved their finger
+        pdfContainer.scrollLeft += e.touches[0].clientX - e.touches[0].screenX;
+        pdfContainer.scrollTop += e.touches[0].clientY - e.touches[0].screenY;
+    }, {passive: false});
 </script>
