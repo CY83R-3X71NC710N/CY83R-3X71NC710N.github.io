@@ -13,4 +13,5 @@ This also imports a tome.app pdf into the website.
 
 # THANKS TO:
 ```
+https://github.com/jekyll/jekyll-compose
 ```
