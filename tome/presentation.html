@@ -10,13 +10,16 @@
       height: 100%;
     }
     #pdf-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      visibility: hidden;
     }
     canvas {
       display: block;
+      height: 100%;
+      width: 100%;
       object-fit: contain;
     }
   </style>
@@ -69,6 +72,9 @@
         // Update canvas size on window resize and orientation change
         window.addEventListener('resize', setCanvasSize);
         window.addEventListener('orientationchange', setCanvasSize);
+
+        // Make the PDF container visible after rendering the first page
+        document.getElementById('pdf-container').style.visibility = 'visible';
       });
     });
   </script>
