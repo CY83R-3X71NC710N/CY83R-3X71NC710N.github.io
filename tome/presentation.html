@@ -8,16 +8,11 @@
       margin: 0;
       padding: 0;
       height: 100%;
-    }
-    #pdf-container {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      visibility: hidden;
+      overflow: hidden;
     }
     canvas {
       display: block;
+      margin: auto;
       height: 100%;
       width: 100%;
       object-fit: contain;
@@ -42,6 +37,11 @@
           var devicePixelRatio = window.devicePixelRatio || 1;
           canvas.height = window.innerHeight * devicePixelRatio;
           canvas.width = window.innerWidth * devicePixelRatio;
+          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            canvas.style.transform = 'rotate(180deg)';
+          }
+          viewport.width = canvas.width;
+          viewport.height = canvas.height;
         }
         setCanvasSize();
 
@@ -55,13 +55,19 @@
         });
 
         // Set up automatic slideshow
-        var currentPage = 0;
+        var currentPage = 1;
         var numPages = pdf.numPages;
         setInterval(function() {
-          currentPage = (currentPage + 1) % numPages;
-          pdf.getPage(currentPage + 1).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+          if (currentPage >= numPages) {
+            currentPage = 1;
+          } else {
+            currentPage++;
+          }
+          pdf.getPage(currentPage).then(function(page) {
+            var viewport = page.getViewport({scale: Math.min(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             setCanvasSize();
+            viewport.width = canvas.width;
+            viewport.height = canvas.height;
             page.render({
               canvasContext: context,
               viewport: viewport
@@ -72,9 +78,6 @@
         // Update canvas size on window resize and orientation change
         window.addEventListener('resize', setCanvasSize);
         window.addEventListener('orientationchange', setCanvasSize);
-
-        // Make the PDF container visible after rendering the first page
-        document.getElementById('pdf-container').style.visibility = 'visible';
       });
     });
   </script>
