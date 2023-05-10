@@ -36,6 +36,10 @@
           var devicePixelRatio = window.devicePixelRatio || 1;
           canvas.height = window.innerHeight * devicePixelRatio;
           canvas.width = window.innerWidth * devicePixelRatio;
+          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
+            canvas.style.transform = 'rotate(180deg)';
+          }
+          viewport.width = canvas.width;
         }
         setCanvasSize();
 
@@ -49,13 +53,18 @@
         });
 
         // Set up automatic slideshow
-        var currentPage = 0;
+        var currentPage = 1;
         var numPages = pdf.numPages;
         setInterval(function() {
-          currentPage = (currentPage + 1) % numPages;
-          pdf.getPage(currentPage + 1).then(function(page) {
+          if (currentPage >= numPages) {
+            currentPage = 1;
+          } else {
+            currentPage++;
+          }
+          pdf.getPage(currentPage).then(function(page) {
             var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             setCanvasSize();
+            viewport.width = canvas.width;
             page.render({
               canvasContext: context,
               viewport: viewport
