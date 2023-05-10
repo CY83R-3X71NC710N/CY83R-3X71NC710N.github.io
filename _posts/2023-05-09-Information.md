@@ -15,4 +15,4 @@ This website has my various viewpoints and literature/picture based content such
 Well, who wouldn't want a personal wikipedia but my blog offers something unique, I explain content an easy-to-understand way and will dive into many advanced cybersecurity topics.
 
 # Presentation:
-[View Presentation](/tome/presentation.html)
+[View Presentation (When presenting use landscape mode or you may recieve visual errors)](/tome/presentation.html)
