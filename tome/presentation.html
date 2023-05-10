@@ -1,0 +1,19 @@
+<!-- Presentation -->
+<div id="pdf-container">
+    <object data="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf" type="application/pdf" style="overflow:hidden">
+        <embed src="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">
+            <p>This browser does not support PDFs. Please download the PDF to view it: <a href="/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf">Download PDF</a>.</p>
+        </embed>
+    </object>
+</div>
+
+<script>
+    // Get screen dimensions
+    var screenWidth = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+    var screenHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+
+    // Set dimensions of PDF container
+    var pdfContainer = document.getElementById("pdf-container");
+    pdfContainer.style.width = screenWidth + "px";
+    pdfContainer.style.height = screenHeight + "px";
+</script>
