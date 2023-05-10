@@ -14,7 +14,7 @@
       margin: auto;
       height: 100%;
       width: 100%;
-      object-fit: contain;
+      object-fit: fill;
     }
   </style>
 </head>
@@ -28,17 +28,15 @@
       // Get the first page of the PDF
       pdf.getPage(1).then(function(page) {
         var canvas = document.createElement('canvas');
+        canvas.setAttribute('id', 'pdf-canvas');
         var context = canvas.getContext('2d');
-        var viewport = page.getViewport({scale: 1});
+        var viewport = page.getViewport({ scale: 1, rotation: 180 });
 
         // Set the canvas size to fill the screen
         function setCanvasSize() {
           var devicePixelRatio = window.devicePixelRatio || 1;
           canvas.height = window.innerHeight * devicePixelRatio;
           canvas.width = window.innerWidth * devicePixelRatio;
-          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            canvas.style.transform = 'rotate(180deg)';
-          }
         }
         setCanvasSize();
 
@@ -61,7 +59,7 @@
             currentPage++;
           }
           pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+            var viewport = page.getViewport({ scale: Math.max(canvas.width / page.getViewport({scale: 1, rotation: 180}).width, canvas.height / page.getViewport({scale: 1, rotation: 180}).height), rotation: 180 });
             setCanvasSize();
             page.render({
               canvasContext: context,
