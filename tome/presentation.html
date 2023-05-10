@@ -5,15 +5,18 @@
   <title>PDF Slideshow</title>
   <style>
     html, body {
-      margin: auto;
+      margin: 0;
       padding: 0;
+      height: 100%;
+    }
+    #pdf-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
       height: 100%;
     }
     canvas {
       display: block;
-      margin: auto;
-      height: 100%;
-      width: 100%;
       object-fit: contain;
     }
   </style>
