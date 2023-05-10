@@ -32,16 +32,16 @@
         var viewport = page.getViewport({scale: 1});
 
         // Set the canvas size to fill the screen
-        function setCanvasSize() {
+        function setCanvasSize(scale) {
           var devicePixelRatio = window.devicePixelRatio || 1;
-          canvas.height = window.innerHeight * devicePixelRatio;
-          canvas.width = window.innerWidth * devicePixelRatio;
+          canvas.height = window.innerHeight * devicePixelRatio * scale;
+          canvas.width = window.innerWidth * devicePixelRatio * scale;
           if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
             canvas.style.transform = 'rotate(180deg)';
           }
           viewport.width = canvas.width;
         }
-        setCanvasSize();
+        setCanvasSize(1); // Default scale factor of 1
 
         // Add the canvas to the document
         document.getElementById('pdf-container').appendChild(canvas);
@@ -63,7 +63,7 @@
           }
           pdf.getPage(currentPage).then(function(page) {
             var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
-            setCanvasSize();
+            setCanvasSize(1); // Reset scale factor to 1
             viewport.width = canvas.width;
             page.render({
               canvasContext: context,
@@ -73,8 +73,8 @@
         }, 10000);
 
         // Update canvas size on window resize and orientation change
-        window.addEventListener('resize', setCanvasSize);
-        window.addEventListener('orientationchange', setCanvasSize);
+        window.addEventListener('resize', function() { setCanvasSize(1); });
+        window.addEventListener('orientationchange', function() { setCanvasSize(1); });
       });
     });
   </script>
