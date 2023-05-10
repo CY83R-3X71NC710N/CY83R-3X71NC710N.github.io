@@ -8,7 +8,6 @@
       margin: 0;
       padding: 0;
       height: 100%;
-      touch-action: none; /* prevent zooming and panning on iOS */
     }
     #pdf-container {
       position: relative;
@@ -30,6 +29,8 @@
     canvas {
       display: block;
       object-fit: contain;
+      top: 0;
+      left: 0;
     }
   </style>
 </head>
@@ -40,21 +41,20 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
   <script>
-    // Show loading overlay for 10 seconds
     var loadingOverlay = document.getElementById('loading-overlay');
+    var loadingComplete = false;
+
     setTimeout(function() {
       loadingOverlay.style.display = 'none';
+      loadingComplete = true;
     }, 10000);
 
-    // Initialize the PDF viewer
     pdfjsLib.getDocument('/tome/hackers-loft-your-one-stop-shop-for-cybersecurity-insights-and-tips.pdf').promise.then(function(pdf) {
-      // Get the first page of the PDF
       pdf.getPage(1).then(function(page) {
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
         var viewport = page.getViewport({scale: 1});
 
-        // Set the canvas size to fill the screen
         function setCanvasSize() {
           var devicePixelRatio = window.devicePixelRatio || 1;
           canvas.height = window.innerHeight * devicePixelRatio;
@@ -62,31 +62,30 @@
         }
         setCanvasSize();
 
-        // Add the canvas to the document
         document.getElementById('pdf-container').appendChild(canvas);
 
-        // Render the first page
         page.render({
           canvasContext: context,
           viewport: viewport
         });
 
-        // Set up automatic slideshow
-        var currentPage = 0;
+        var currentPage = 1;
         var numPages = pdf.numPages;
+
         setInterval(function() {
-          currentPage = (currentPage + 1) % numPages;
-          pdf.getPage(currentPage + 1).then(function(page) {
-            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
-            setCanvasSize();
-            page.render({
-              canvasContext: context,
-              viewport: viewport
+          if (loadingComplete) {
+            currentPage = (currentPage % numPages) + 1;
+            pdf.getPage(currentPage).then(function(page) {
+              var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+              setCanvasSize();
+              page.render({
+                canvasContext: context,
+                viewport: viewport
+              });
             });
-          });
+          }
         }, 10000);
 
-        // Update canvas size on window resize and orientation change
         window.addEventListener('resize', setCanvasSize);
         window.addEventListener('orientationchange', setCanvasSize);
       });
