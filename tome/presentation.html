@@ -5,10 +5,9 @@
   <title>PDF Slideshow</title>
   <style>
     html, body {
-      margin: 0;
+      margin: auto;
       padding: 0;
       height: 100%;
-      overflow: hidden;
     }
     canvas {
       display: block;
@@ -37,11 +36,6 @@
           var devicePixelRatio = window.devicePixelRatio || 1;
           canvas.height = window.innerHeight * devicePixelRatio;
           canvas.width = window.innerWidth * devicePixelRatio;
-          if (/iPad|iPhone|iPod/.test(navigator.userAgent)) {
-            canvas.style.transform = 'rotate(180deg)';
-          }
-          viewport.width = canvas.width;
-          viewport.height = canvas.height;
         }
         setCanvasSize();
 
@@ -55,19 +49,13 @@
         });
 
         // Set up automatic slideshow
-        var currentPage = 1;
+        var currentPage = 0;
         var numPages = pdf.numPages;
         setInterval(function() {
-          if (currentPage >= numPages) {
-            currentPage = 1;
-          } else {
-            currentPage++;
-          }
-          pdf.getPage(currentPage).then(function(page) {
-            var viewport = page.getViewport({scale: Math.min(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
+          currentPage = (currentPage + 1) % numPages;
+          pdf.getPage(currentPage + 1).then(function(page) {
+            var viewport = page.getViewport({scale: Math.max(canvas.width / page.getViewport({scale: 1}).width, canvas.height / page.getViewport({scale: 1}).height)});
             setCanvasSize();
-            viewport.width = canvas.width;
-            viewport.height = canvas.height;
             page.render({
               canvasContext: context,
               viewport: viewport
