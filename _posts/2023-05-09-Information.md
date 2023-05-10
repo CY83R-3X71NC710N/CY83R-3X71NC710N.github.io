@@ -1,6 +1,6 @@
 ---
 title: Information
-author: Gavin Klibowitz
+author: Gavin
 date: 2023-05-09
 categories: [Blogging, Cybersecurity]
 tags: [information]
