@@ -6,6 +6,11 @@ The name of the repository has to be in a very specific format as if it is not i
 
 GITHUB_USERNAME.github.io
 
+# How does this work?
+
+This exports your Remnote as a .md with the correct categories to show up on the website.
+This also imports a tome.app pdf into the website.
+
 # THANKS TO:
 ```
 ```
